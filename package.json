@@ -1,0 +1,17 @@
+{
+  "name": "vid-subs",
+  "version": "1.0.0",
+  "description": "Video Subtitle Editor",
+  "main": "webpack.config.js",
+  "private": true,
+  "author": "Julian Garcia <julian.garcia.leoni@gmail.com>",
+  "license": "ISC",
+  "scripts": {
+    "start": "webpack"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11"
+  }
+}

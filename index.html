@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VidSubs</title>
+</head>
+<body>
+  <h1>VidSubs</h1>
+  <div class="video">
+    <input type="url" name="video__url" id="videoUrl"><br/>
+    <div class="video__viewport" id="videoViewport"></div>
+    <div class="video__nav" style="width:640px; height: 4rem; background: lightgrey;">
+      <span class="video__marker-start"></span>
+      <span class="video__marker-end"></span>
+    </div>
+  </div>
+  <div class="subtitle">
+    <label for="subtitleText"></label>
+    <input type="text" name="subtitleText" id="subtitleText" class="subtitle__text">
+    <input type="text" name="subtitleStart" id="subtitleStart">
+    <input type="text" name="subtitleEnd" id="subtitleEnd">
+    <button class="subtitle__add">+</button>
+  </div>
+  <div class="subtitles"></div>
+  <script src="./dist/vendor.js"></script>
+  <script src="./dist/main.js"></script>
+</body>
+</html>
