@@ -7,9 +7,8 @@
 </head>
 <body class="container">
   <h1>VidSubs</h1>
-  <h2>https://www.youtube.com/watch?v=FrOyJMgC1rY</h2>
   <div class="video">
-    <input type="url" name="video__url" id="videoUrl"><br/>
+    <input type="url" name="video__url" id="videoUrl" class="video__url"><br/>
     <div class="video__viewport" id="videoViewport"></div>
     <div class="video__nav">
       <span class="video__marker video__marker-start"></span>
@@ -17,10 +16,18 @@
     </div>
   </div>
   <div class="subtitle">
-    <label for="subtitleText"></label>
-    <input type="text" name="subtitleText" id="subtitleText" class="subtitle__text">
-    <input type="text" name="subtitleStart" id="subtitleStart">
-    <input type="text" name="subtitleEnd" id="subtitleEnd">
+    <div>
+      <label for="subtitleText">Subtitle</label><br>
+      <input type="text" name="subtitleText" id="subtitleText" class="subtitle__text">
+    </div>
+    <div>
+      <label for="subtitleStart">Start time</label><br>
+      <input type="text" name="subtitleStart" id="subtitleStart" class="subtitle__start">
+    </div>
+    <div>
+      <label for="subtitleEnd">End time</label><br>
+      <input type="text" name="subtitleEnd" id="subtitleEnd" class="subtitle__end">
+    </div>
     <button class="subtitle__add">+</button>
   </div>
   <div class="subtitles"></div>

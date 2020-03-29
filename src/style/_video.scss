@@ -11,6 +11,10 @@
     position: absolute;
     width: 1rem;
     height: 100%;
+    cursor: grab;
+    &:active {
+      cursor: grabbing;
+    }
   }
 
   &__marker-start {
@@ -21,5 +25,11 @@
   &__marker-end {
     left: 2%;
     background: green;
+  }
+
+  &__url {
+    width: 100%;
+    margin: 0 0 1rem;
+    font-size: 1.5rem;
   }
 }

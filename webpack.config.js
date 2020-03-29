@@ -14,7 +14,7 @@ module.exports = {
           'css-loader',
           'sass-loader',
         ],
-      },
+      }
     ]
   }
 };

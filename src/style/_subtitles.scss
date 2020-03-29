@@ -1,0 +1,10 @@
+.subtitle {
+  display: grid;
+  grid-template-columns: 6fr 1fr 1fr .5fr;
+  gap: 1rem;
+  margin: 1rem 0;
+
+  &__text, &__start, &__end {
+    width: 100%;
+  }
+}

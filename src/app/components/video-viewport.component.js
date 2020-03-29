@@ -12,10 +12,12 @@ export class VideoViewportComponent {
     this.duration;
     this.navPosition;
     this.markerClasses;
+    this.loop;
   }
 
   injectVideoFrame(url) {
     const videoID = url.split('v=')[1];
+    if (this.player) { this.player.destroy(); }
     this.player = new YT.Player('videoViewport', {
       height: '440',
       width: '900',
@@ -29,19 +31,35 @@ export class VideoViewportComponent {
 
   onUrlEntry() {
     this.urlEntryElement.addEventListener('change', (e) => {
-      this.injectVideoFrame(e.target.value);
+      const urlEntered = e.target.value;
+      if (/^https:\/\/www.youtube.com\/watch\?v=/.test(urlEntered)) {
+        if (this.loop) { 
+          clearInterval(this.loop); 
+          this.currentTime = 0;
+          this.navPosition = 0;
+          this.subtitleStart.value = '';
+          this.subtitleEnd.value = '';
+          this.videoNavStart.style.left = '0%';
+          this.videoNavEnd.style.left = '2%';
+        }
+        this.subtitleStart.value = '0:00:00';
+        this.subtitleEnd.value = '0:00:01';
+        this.injectVideoFrame(urlEntered);
+      }
     });
   } 
 
   onMoveVideoMarkers() {
     let mouseDown = false;
     this.videoNav.addEventListener('mousedown', (event) => {
+      if (!document.querySelector('iframe.video__viewport')) { return; }
       event.preventDefault();
       this.markerClasses = event.target.classList;
       mouseDown = true;
     });
 
     this.videoNav.addEventListener('mouseup', (event) => {
+      if (!document.querySelector('iframe.video__viewport')) { return; }
       mouseDown = false;
 
       if (!this.markerClasses.contains('video__marker-end')) {
@@ -56,26 +74,16 @@ export class VideoViewportComponent {
         }
 
         this.player.seekTo((this.navPosition / 100) * this.duration);
-        // this.player.pauseVideo();
       }
-
-      // if (this.markerClasses.contains('video__marker-end')) {
-      //   const endMarkerPosition = (event.offsetX / this.videoNav.offsetWidth) * 100;
-      //   const startMarkerPosition = Number(this.videoNavStart.style.left.replace('%',''));
-
-      //   if (endMarkerPosition > startMarkerPosition) {
-      //     this.videoNavEnd.style.left = `${endMarkerPosition}%`;
-      //     this.setEndTime(endMarkerPosition);
-      //   }
-      // }
     });
 
     this.videoNav.addEventListener('mousemove', (event) => {
+      if (!document.querySelector('iframe.video__viewport')) { return; }
       if (mouseDown && this.markerClasses.contains('video__marker-end')) {
         let markerPosition = event.clientX - ((window.innerWidth - this.videoNav.offsetWidth) / 2);
         let markerPercent = (markerPosition / this.videoNav.offsetWidth) * 100;
-        console.log(event.offsetX, markerPosition, markerPercent);
-        if (markerPercent <= 99) {
+
+        if (markerPercent <= 98.5) {
           this.videoNavEnd.style.left = `${markerPercent}%`;
           this.setEndTime(markerPercent);
         }
@@ -89,7 +97,7 @@ export class VideoViewportComponent {
 
   onPlayerStateChange(event) {
     if (event.data == YT.PlayerState.PLAYING) {
-      setInterval(this.playing.bind(this,event), 1000);
+      this.loop = setInterval(this.playing.bind(this,event), 1000);
     }
   }
 

@@ -1,0 +1,19 @@
+{
+  "google-fonts-plugin": {
+      "fonts": [
+          {
+              "family": "Literata",
+              "variants": [
+                  "400", "400i",
+                  "500", "500i",
+                  "600", "600i",
+                  "700", "700i"
+              ]
+          }
+      ],
+      "formats": [
+          "woff",
+          "woff2"
+      ]
+  }
+}
