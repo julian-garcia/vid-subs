@@ -10,5 +10,6 @@ module.exports = merge(common, {
   },
   devServer: {
     contentBase: './dist',
+    hot: true,
   },
 });

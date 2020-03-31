@@ -40,7 +40,7 @@ export class VideoViewportComponent {
           this.subtitleStart.value = '';
           this.subtitleEnd.value = '';
           this.videoNavStart.style.left = '0%';
-          this.videoNavEnd.style.left = '2%';
+          this.videoNavEnd.style.left = '0.5%';
         }
         this.subtitleStart.value = '0:00:00';
         this.subtitleEnd.value = '0:00:01';
@@ -70,7 +70,7 @@ export class VideoViewportComponent {
         this.navPosition = (offset / this.videoNav.offsetWidth) * 100;
         this.videoNavStart.style.left = `${this.navPosition}%`;
         if (this.currentTime >= this.endTime) {
-          this.videoNavEnd.style.left = `${this.navPosition + 2}%`;
+          this.videoNavEnd.style.left = `${this.navPosition + .5}%`;
         }
 
         this.player.seekTo((this.navPosition / 100) * this.duration);
@@ -124,11 +124,11 @@ export class VideoViewportComponent {
     this.setCurrentTime(event);
     this.navPosition = (this.currentTime / this.duration) * 100;
     this.videoNavStart.style.left = `${this.navPosition}%`;
-    if (this.navPosition + 2 >= Number(this.videoNavEnd.style.left.replace('%',''))) {
-      this.videoNavEnd.style.left = `${this.navPosition + 2}%`;
+    if (this.navPosition + .5 >= Number(this.videoNavEnd.style.left.replace('%',''))) {
+      this.videoNavEnd.style.left = `${this.navPosition + .5}%`;
     }
     if (this.subtitleStart.value >= this.subtitleEnd.value) {
-      this.setEndTime(this.navPosition + 2);
+      this.setEndTime(this.navPosition + .5);
     }
   }
 }

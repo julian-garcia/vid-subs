@@ -4,3 +4,9 @@ body, input {
   font-family: 'Literata', serif;
   font-size: 1.2rem;
 }
+
+.site-title, .subtitle__label {
+  background: linear-gradient(to right, #ff0000 0%, #000000 50%);
+  -webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}

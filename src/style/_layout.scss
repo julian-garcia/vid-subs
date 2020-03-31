@@ -1,4 +1,19 @@
-.container {
+.video, header, .subtitle {
   max-width: 900px;
   margin: 0 auto;
+}
+
+header {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  align-items: center;
+}
+
+.site-title {
+  margin: 0 0 1rem;
+}
+
+.site-logo {
+  max-width: 50px;
+  justify-self: end;
 }

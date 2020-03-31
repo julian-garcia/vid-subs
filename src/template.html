@@ -6,26 +6,29 @@
   <title>VidSubs</title>
 </head>
 <body class="container">
-  <h1>VidSubs</h1>
+  <header>
+    <h1 class="site-title">VidSubs</h1>
+    <img src="./images/logo.png" alt="VidSubs" class="site-logo">
+  </header>
   <div class="video">
     <input type="url" name="video__url" id="videoUrl" class="video__url"><br/>
     <div class="video__viewport" id="videoViewport"></div>
-    <div class="video__nav">
-      <span class="video__marker video__marker-start"></span>
-      <span class="video__marker video__marker-end"></span>
-    </div>
+  </div>
+  <div class="video__nav">
+    <span class="video__marker video__marker-start"></span>
+    <span class="video__marker video__marker-end"></span>
   </div>
   <div class="subtitle">
     <div>
-      <label for="subtitleText">Subtitle</label><br>
+      <label for="subtitleText" class="subtitle__label">Subtitle</label><br>
       <input type="text" name="subtitleText" id="subtitleText" class="subtitle__text">
     </div>
     <div>
-      <label for="subtitleStart">Start time</label><br>
+      <label for="subtitleStart" class="subtitle__label start">Start time</label><br>
       <input type="text" name="subtitleStart" id="subtitleStart" class="subtitle__start">
     </div>
     <div>
-      <label for="subtitleEnd">End time</label><br>
+      <label for="subtitleEnd" class="subtitle__label end">End time</label><br>
       <input type="text" name="subtitleEnd" id="subtitleEnd" class="subtitle__end">
     </div>
     <button class="subtitle__add">+</button>

@@ -14,6 +14,20 @@ module.exports = {
           'css-loader',
           'sass-loader',
         ],
+      },
+      {
+        test: /\.html$/i,
+        use: ['html-loader'],
+      },
+      {
+        test: /\.(svg|png|jpg|webp)$/i,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: "[name].[hash].[ext]",
+            outputPath: "images"
+          }
+        },
       }
     ]
   },

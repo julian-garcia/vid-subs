@@ -5,6 +5,7 @@
     height: 4rem; 
     background: lightgrey;
     overflow: hidden;
+    margin: 1rem 0;
   }
 
   &__marker {
@@ -19,12 +20,12 @@
 
   &__marker-start {
     left: 0%;
-    background: red;
+    background: $start-colour;
   }
 
   &__marker-end {
-    left: 2%;
-    background: green;
+    left: .5%;
+    background: $stop-colour;
   }
 
   &__url {
