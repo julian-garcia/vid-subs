@@ -14,9 +14,11 @@
     <input type="url" name="video__url" id="videoUrl" class="video__url"><br/>
     <div class="video__viewport" id="videoViewport"></div>
   </div>
-  <div class="video__nav">
-    <span class="video__marker video__marker-start"></span>
-    <span class="video__marker video__marker-end"></span>
+  <div class="video-nav-container">
+    <div class="video__nav">
+      <span class="video__marker video__marker-start"></span>
+      <span class="video__marker video__marker-end"></span>
+    </div>
   </div>
   <div class="subtitle">
     <div>
@@ -25,14 +27,24 @@
     </div>
     <div>
       <label for="subtitleStart" class="subtitle__label start">Start time</label><br>
-      <input type="text" name="subtitleStart" id="subtitleStart" class="subtitle__start">
+      <input type="text" name="subtitleStart" id="subtitleStart" class="subtitle__start" disabled>
     </div>
     <div>
       <label for="subtitleEnd" class="subtitle__label end">End time</label><br>
-      <input type="text" name="subtitleEnd" id="subtitleEnd" class="subtitle__end">
+      <input type="text" name="subtitleEnd" id="subtitleEnd" class="subtitle__end" disabled>
     </div>
     <button class="subtitle__add">+</button>
   </div>
-  <div class="subtitles"></div>
+  <table class="subtitles">
+    <thead>
+      <tr>
+          <th>Subtitle text</th>
+          <th>Start time</th>
+          <th>End time</th>
+          <th>Options</th>
+      </tr>
+    </thead>
+    <tbody class="subtitles__listing"></tbody>
+  </table>
 </body>
 </html>

@@ -5,8 +5,18 @@ body, input {
   font-size: 1.2rem;
 }
 
-.site-title, .subtitle__label {
-  background: linear-gradient(to right, #ff0000 0%, #000000 50%);
+.site-title {
+  background: linear-gradient(to right, $stop-colour 0%, black 50%);
   -webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
+}
+
+.subtitle__label {
+  &.end {
+    color: $stop-colour;
+  }
+  
+  &.start {
+    color: $start-colour;
+  }
 }

@@ -3,6 +3,7 @@ export class VideoViewportComponent {
     this.urlEntryElement = document.getElementById('videoUrl');
     this.subtitleStart = document.getElementById('subtitleStart');
     this.subtitleEnd = document.getElementById('subtitleEnd');
+    this.videoNavContainer = document.querySelector('.video-nav-container');
     this.videoNav = document.querySelector('.video__nav');
     this.videoNavStart = document.querySelector('.video__marker-start');
     this.videoNavEnd = document.querySelector('.video__marker-end');
@@ -13,15 +14,17 @@ export class VideoViewportComponent {
     this.navPosition;
     this.markerClasses;
     this.loop;
+    this.videoID;
+    this.mouseDown = false;
   }
 
   injectVideoFrame(url) {
-    const videoID = url.split('v=')[1];
+    this.videoID = url.split('v=')[1];
     if (this.player) { this.player.destroy(); }
     this.player = new YT.Player('videoViewport', {
       height: '440',
       width: '900',
-      videoId: videoID,
+      videoId: this.videoID,
       events: {
         'onReady': this.onPlayerReady.bind(this),
         'onStateChange': this.onPlayerStateChange.bind(this)
@@ -42,57 +45,75 @@ export class VideoViewportComponent {
           this.videoNavStart.style.left = '0%';
           this.videoNavEnd.style.left = '0.5%';
         }
-        this.subtitleStart.value = '0:00:00';
-        this.subtitleEnd.value = '0:00:01';
+        this.subtitleStart.value = '00:00:00';
+        this.subtitleEnd.value = '00:00:10';
         this.injectVideoFrame(urlEntered);
+        localStorage.setItem('videoID', this.videoID);
       }
     });
   } 
 
   onMoveVideoMarkers() {
-    let mouseDown = false;
-    this.videoNav.addEventListener('mousedown', (event) => {
+    this.mouseDown = false;
+
+    this.videoNavContainer.addEventListener('mousedown', (event) => {
       if (!document.querySelector('iframe.video__viewport')) { return; }
       event.preventDefault();
       this.markerClasses = event.target.classList;
-      mouseDown = true;
+      this.mouseDown = true;
     });
-
-    this.videoNav.addEventListener('mouseup', (event) => {
-      if (!document.querySelector('iframe.video__viewport')) { return; }
-      mouseDown = false;
-
-      if (!this.markerClasses.contains('video__marker-end')) {
-        let offset = event.offsetX;
-        if (event.target.classList.contains('video__marker-start')) {
-          offset += event.target.offsetLeft;
+    
+    document.addEventListener('mouseup', (event) => {
+      let mouseDownVideoNav = false;
+      event.target.classList.forEach(className => {
+        if (className.indexOf('video-nav-container') !== -1 ||
+            className.indexOf('video__nav')          !== -1 ||
+            className.indexOf('video__marker')       !== -1) {
+          mouseDownVideoNav = true;
         }
-        this.navPosition = (offset / this.videoNav.offsetWidth) * 100;
-        this.videoNavStart.style.left = `${this.navPosition}%`;
-        if (this.currentTime >= this.endTime) {
-          this.videoNavEnd.style.left = `${this.navPosition + .5}%`;
-        }
+      });
 
-        this.player.seekTo((this.navPosition / 100) * this.duration);
+      if (mouseDownVideoNav) {
+        if (!document.querySelector('iframe.video__viewport')) { return; }
+        this.mouseDown = false;
+  
+        if (!this.markerClasses.contains('video__marker-end')) {
+          this.navPosition = (this.getMarkerPosition(event) / this.videoNav.offsetWidth) * 100;
+          this.videoNavStart.style.left = `${this.navPosition}%`;
+          if (this.currentTime >= this.endTime) {
+            this.videoNavEnd.style.left = `${this.navPosition + .5}%`;
+          }
+  
+          this.player.seekTo((this.navPosition / 100) * this.duration);
+        }
       }
     });
 
-    this.videoNav.addEventListener('mousemove', (event) => {
+    document.addEventListener('mousemove', (event) => {
       if (!document.querySelector('iframe.video__viewport')) { return; }
-      if (mouseDown && this.markerClasses.contains('video__marker-end')) {
-        let markerPosition = event.clientX - ((window.innerWidth - this.videoNav.offsetWidth) / 2);
-        let markerPercent = (markerPosition / this.videoNav.offsetWidth) * 100;
+      if (this.mouseDown && (this.markerClasses.contains('video__marker-end') || this.markerClasses.contains('video__marker-start'))) {
+        this.navPosition = (this.getMarkerPosition(event) / this.videoNav.offsetWidth) * 100;
 
-        if (markerPercent <= 98.5) {
-          this.videoNavEnd.style.left = `${markerPercent}%`;
-          this.setEndTime(markerPercent);
+        if (this.navPosition <= 99.5) {
+          if (this.markerClasses.contains('video__marker-end')) {
+            this.videoNavEnd.style.left = `${this.navPosition}%`;
+            this.setEndTime(this.navPosition);
+          } else {
+            this.videoNavStart.style.left = `${this.navPosition}%`;
+            this.setStartTime(this.navPosition);
+          }
         }
       }
     });
   }
 
+  getMarkerPosition(event) {
+    return event.clientX - ((window.innerWidth - this.videoNav.offsetWidth) / 2);
+  }
+
   onPlayerReady(event) {
     this.duration = event.target.getDuration();
+    this.minimumPercentageGap = (10 / this.duration) * 100;
   }
 
   onPlayerStateChange(event) {
@@ -106,29 +127,45 @@ export class VideoViewportComponent {
     this.subtitleStart.value = this.convertSecondsToHMS(this.currentTime);
   }
 
-  setEndTime(endMarkerPosition) {
-    this.endTime = this.duration * (endMarkerPosition / 100);
+  setEndTime(markerPosition) {
+    this.endTime = this.duration * (markerPosition / 100);
     this.subtitleEnd.value = this.convertSecondsToHMS(this.endTime);
+  }
+
+  setStartTime(markerPosition) {
+    this.currentTime = this.duration * (markerPosition / 100);
+    this.subtitleStart.value = this.convertSecondsToHMS(this.currentTime);
   }
   
   convertSecondsToHMS(numSeconds) {
-    let seconds, minutes, hours;
+    let seconds, minutes, hours, secondsShow, minutesShow, hoursShow;
+
     hours = Math.floor(numSeconds / 60 / 60);
     minutes = Math.floor(numSeconds / 60) - (hours * 60);
     seconds = Math.floor(numSeconds - (minutes * 60) - (hours * 60 * 60));
-    seconds = seconds < 10 ? `0${seconds}` : seconds;
-    return `${hours}:${minutes}:${seconds}`;
+
+    hoursShow = hours < 10 ? `0${hours}` : hours;
+    minutesShow = minutes < 10 ? `0${minutes}` : minutes;
+    secondsShow = seconds < 10 ? `0${seconds}` : seconds;
+
+    return `${hoursShow}:${minutesShow}:${secondsShow}`;
   }
 
   playing(event) {
-    this.setCurrentTime(event);
-    this.navPosition = (this.currentTime / this.duration) * 100;
-    this.videoNavStart.style.left = `${this.navPosition}%`;
-    if (this.navPosition + .5 >= Number(this.videoNavEnd.style.left.replace('%',''))) {
-      this.videoNavEnd.style.left = `${this.navPosition + .5}%`;
-    }
-    if (this.subtitleStart.value >= this.subtitleEnd.value) {
-      this.setEndTime(this.navPosition + .5);
+    if (!this.mouseDown) {
+      this.setCurrentTime(event);
+      this.navPosition = (this.currentTime / this.duration) * 100;
+      this.videoNavStart.style.left = `${this.navPosition}%`;
+  
+      let startSeconds = Number(this.subtitleStart.value.replace(/:/g,''));
+      let endSeconds = Number(this.subtitleEnd.value.replace(/:/g,''));
+  
+      if (startSeconds + 9 >= endSeconds) {
+        this.setEndTime(this.navPosition + this.minimumPercentageGap);
+        this.videoNavEnd.style.left = `${this.navPosition + this.minimumPercentageGap}%`;
+      }
+    } else {
+      event.target.pauseVideo();
     }
   }
 }
