@@ -1,7 +1,10 @@
 @import 'variables',
+        '~@fortawesome/fontawesome-free/scss/fontawesome.scss',
+        '~@fortawesome/fontawesome-free/scss/solid.scss',
         'normalise',
         'typography',
         'layout',
         'form',
         'video',
-        'subtitles';
+        'subtitles',
+        'general';

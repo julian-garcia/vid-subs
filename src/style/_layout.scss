@@ -1,4 +1,8 @@
-.video, header, .subtitle, .subtitles {
+.container {
+  min-width: 1100px;
+}
+
+.video, header, .subtitle, .subtitles, .video-controls {
   max-width: 900px;
   margin: 0 auto;
 }

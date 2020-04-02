@@ -3,9 +3,25 @@
   grid-template-columns: 6fr 1fr 1fr .5fr;
   gap: 1rem;
   margin: 1rem auto;
+  align-items: end;
+  position: relative;
+
+  &__label {
+    font-weight: bold;
+  }
 
   &__text, &__start, &__end {
     width: 100%;
+  }
+
+  &__start, &__end {
+    background: lightgray;
+    border-color: gray;
+  }
+
+  &__add {
+    font-size: 2rem;
+    cursor: pointer;
   }
 }
 
@@ -23,5 +39,12 @@
   td, th {
     border-bottom: 2px solid gray;
     padding: 1rem .5rem;
+  }
+
+  &-download {
+    position: absolute;
+    right: -5rem;
+    bottom: 0;
+    font-size: 2rem;
   }
 }

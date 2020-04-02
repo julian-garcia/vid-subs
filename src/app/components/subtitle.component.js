@@ -53,13 +53,17 @@ export class SubtitleComponent {
       const text = document.createElement('td');
       const start = document.createElement('td');
       const end = document.createElement('td');
+      const options = document.createElement('td');
       text.innerText = subtitle.text;
       start.innerText = subtitle.startTime;
       end.innerText = subtitle.endTime;
-      start.style.textAlign = end.style.textAlign = 'center';
+      options.innerHTML = `<i class="fas fa-edit"></i>
+                           <i class="fas fa-trash-alt"></i>`
+      start.style.textAlign = end.style.textAlign = options.style.textAlign = 'center';
       newRow.append(text);
       newRow.append(start);
       newRow.append(end);
+      newRow.append(options);
       newRow.setAttribute('data-index', index);
       this.subtitlesListing.append(newRow);
     });

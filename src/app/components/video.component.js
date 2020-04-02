@@ -1,4 +1,4 @@
-export class VideoViewportComponent {
+export class VideoComponent {
   constructor() {
     this.urlEntryElement = document.getElementById('videoUrl');
     this.subtitleStart = document.getElementById('subtitleStart');
@@ -7,14 +7,18 @@ export class VideoViewportComponent {
     this.videoNav = document.querySelector('.video__nav');
     this.videoNavStart = document.querySelector('.video__marker-start');
     this.videoNavEnd = document.querySelector('.video__marker-end');
+    this.videoControls = document.querySelector('.video-controls');
+    this.videoVolume = document.querySelector('.video__volume-container');
+    this.videoVolumeLevel = document.querySelector('.video__volume-level');
     this.player;
     this.currentTime;
     this.endTime;
     this.duration;
     this.navPosition;
     this.markerClasses;
-    this.loop;
+    this.playLoop;
     this.videoID;
+    this.volumeAdjust;
     this.mouseDown = false;
   }
 
@@ -36,8 +40,8 @@ export class VideoViewportComponent {
     this.urlEntryElement.addEventListener('change', (e) => {
       const urlEntered = e.target.value;
       if (/^https:\/\/www.youtube.com\/watch\?v=/.test(urlEntered)) {
-        if (this.loop) { 
-          clearInterval(this.loop); 
+        if (this.playLoop) { 
+          clearInterval(this.playLoop); 
           this.currentTime = 0;
           this.navPosition = 0;
           this.subtitleStart.value = '';
@@ -64,6 +68,8 @@ export class VideoViewportComponent {
     });
     
     document.addEventListener('mouseup', (event) => {
+      if (!document.querySelector('iframe.video__viewport')) { return; }
+
       let mouseDownVideoNav = false;
       event.target.classList.forEach(className => {
         if (className.indexOf('video-nav-container') !== -1 ||
@@ -72,16 +78,18 @@ export class VideoViewportComponent {
           mouseDownVideoNav = true;
         }
       });
-
       if (mouseDownVideoNav) {
-        if (!document.querySelector('iframe.video__viewport')) { return; }
         this.mouseDown = false;
-  
+        
         if (!this.markerClasses.contains('video__marker-end')) {
           this.navPosition = (this.getMarkerPosition(event) / this.videoNav.offsetWidth) * 100;
+          this.setStartTime(this.navPosition);
+
           this.videoNavStart.style.left = `${this.navPosition}%`;
-          if (this.currentTime >= this.endTime) {
+      
+          if (this.currentTime >= (this.endTime || 0)) {
             this.videoNavEnd.style.left = `${this.navPosition + .5}%`;
+            this.setEndTime(this.navPosition + .5);
           }
   
           this.player.seekTo((this.navPosition / 100) * this.duration);
@@ -107,6 +115,45 @@ export class VideoViewportComponent {
     });
   }
 
+  onClickVideoControls() {
+    this.videoControls.addEventListener('click', (event) => {
+      const controlClass = event.target.classList;
+      if (controlClass.contains('video__play')) { this.player.playVideo(); }
+      if (controlClass.contains('video__pause')) { this.player.pauseVideo(); }
+    });
+
+    this.videoControls.addEventListener('mousedown', (event) => {
+      const controlClass = event.target.classList;
+      this.adjustVolume(controlClass);
+    });
+
+    this.videoControls.addEventListener('mouseup', () => {
+      clearInterval(this.volumeAdjust);
+    });
+
+    this.videoVolume.addEventListener('click', (event) => {
+      let volumeLevel = (event.offsetX / this.videoVolume.offsetWidth) * 100;
+      if (this.player) { 
+        this.player.setVolume(volumeLevel); 
+        this.videoVolumeLevel.style.width = `${volumeLevel}%`;
+      }
+    });
+  }
+
+  adjustVolume(className) {
+    let increment = 0;
+    if (className.contains('video__volume-up') || className.contains('video__volume-down')) {
+      increment = className.contains('video__volume-up') ? 1 : -1;
+      if(this.player) {
+        this.volumeAdjust = setInterval(() => {
+          let playerVolume = this.player.getVolume();
+          this.player.setVolume(playerVolume + increment);
+          this.videoVolumeLevel.style.width = `${playerVolume}%`
+        }, 100);
+      }
+    }
+  }
+
   getMarkerPosition(event) {
     return event.clientX - ((window.innerWidth - this.videoNav.offsetWidth) / 2);
   }
@@ -118,7 +165,7 @@ export class VideoViewportComponent {
 
   onPlayerStateChange(event) {
     if (event.data == YT.PlayerState.PLAYING) {
-      this.loop = setInterval(this.playing.bind(this,event), 1000);
+      this.playLoop = setInterval(this.playing.bind(this,event), 1000);
     }
   }
 

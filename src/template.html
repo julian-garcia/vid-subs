@@ -11,16 +11,29 @@
     <img src="./images/logo.png" alt="VidSubs" class="site-logo">
   </header>
   <div class="video">
-    <input type="url" name="video__url" id="videoUrl" class="video__url"><br/>
+    <input type="url" name="video__url" id="videoUrl" class="video__url" placeholder="https://www.youtube.com/watch?v="><br/>
     <div class="video__viewport" id="videoViewport"></div>
+  </div>
+  <div class="video-controls">
+    <i class="fas fa-play video__play"></i>
+    <i class="fas fa-pause video__pause"></i>
+    <div class="video__volume">
+      <i class="fas fa-volume-down video__volume-down"></i>
+      <i class="fas fa-volume-up video__volume-up"></i><br>
+      <div class="video__volume-container">
+        <div class="video__volume-level"></div>
+      </div>
+    </div>
   </div>
   <div class="video-nav-container">
     <div class="video__nav">
       <span class="video__marker video__marker-start"></span>
       <span class="video__marker video__marker-end"></span>
+
     </div>
   </div>
   <div class="subtitle">
+    <i class="fas fa-file-download subtitles-download"></i>
     <div>
       <label for="subtitleText" class="subtitle__label">Subtitle</label><br>
       <input type="text" name="subtitleText" id="subtitleText" class="subtitle__text">
@@ -33,7 +46,7 @@
       <label for="subtitleEnd" class="subtitle__label end">End time</label><br>
       <input type="text" name="subtitleEnd" id="subtitleEnd" class="subtitle__end" disabled>
     </div>
-    <button class="subtitle__add">+</button>
+    <i class="fas fa-plus subtitle__add"></i>
   </div>
   <table class="subtitles">
     <thead>
