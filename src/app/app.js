@@ -4,4 +4,6 @@ export const run = (videoComponent, subtitleComponent) => {
   videoComponent.onClickVideoControls();
   subtitleComponent.onUrlEntry();
   subtitleComponent.onAddSubtitle();
+  subtitleComponent.onDownloadSubtitles();
+  subtitleComponent.onClickSubtitles();
 };

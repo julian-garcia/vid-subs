@@ -28,7 +28,7 @@
 .subtitles {
   width: 100%;
   border-spacing: 0;
-  margin-top: 3rem;
+  margin: 3rem auto 3rem;
   background: lightgray;
   padding: 1rem;
 
@@ -46,5 +46,7 @@
     right: -5rem;
     bottom: 0;
     font-size: 2rem;
+    color: black;
+    line-height: 2rem;
   }
 }

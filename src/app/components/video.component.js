@@ -118,8 +118,10 @@ export class VideoComponent {
   onClickVideoControls() {
     this.videoControls.addEventListener('click', (event) => {
       const controlClass = event.target.classList;
-      if (controlClass.contains('video__play')) { this.player.playVideo(); }
-      if (controlClass.contains('video__pause')) { this.player.pauseVideo(); }
+      if (this.player) {
+        if (controlClass.contains('video__play')) { this.player.playVideo(); }
+        if (controlClass.contains('video__pause')) { this.player.pauseVideo(); }
+      }
     });
 
     this.videoControls.addEventListener('mousedown', (event) => {
