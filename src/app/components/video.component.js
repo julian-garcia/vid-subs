@@ -142,6 +142,16 @@ export class VideoComponent {
     });
   }
 
+  onSubtitleEdit() {
+    document.addEventListener('editSubtitle', () => {
+      const startSeconds = this.convertHMStoSeconds(this.subtitleStart.value);
+      const endSeconds = this.convertHMStoSeconds(this.subtitleEnd.value);
+      this.videoNavStart.style.left = `${(startSeconds / this.duration) * 100}%`;
+      this.videoNavEnd.style.left = `${(endSeconds / this.duration) * 100}%`;
+      this.player.seekTo(startSeconds);
+    });
+  }
+
   adjustVolume(className) {
     let increment = 0;
     if (className.contains('video__volume-up') || className.contains('video__volume-down')) {
@@ -198,6 +208,11 @@ export class VideoComponent {
     secondsShow = seconds < 10 ? `0${seconds}` : seconds;
 
     return `${hoursShow}:${minutesShow}:${secondsShow}`;
+  }
+
+  convertHMStoSeconds(hms) {
+    const hmsArray = hms.split(':');
+    return (hmsArray[0] * 60 * 60) + (hmsArray[1] * 60) + Number(hmsArray[2]);
   }
 
   playing(event) {

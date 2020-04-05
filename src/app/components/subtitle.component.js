@@ -8,6 +8,7 @@ export class SubtitleComponent {
     this.subtitlesListing = document.querySelector('.subtitles__listing');
     this.subtitlesDownload = document.querySelector('.subtitles-download');
     this.subtitlesDownloadLink = document.getElementById('download');
+    this.videoId;
   }
 
   onAddSubtitle() {
@@ -18,6 +19,7 @@ export class SubtitleComponent {
         this.setVideoID();
         this.saveToLocalStorage();
         this.refreshSubtitleListing();
+        this.subtitleText.value = '';
       }
     });
   }
@@ -41,6 +43,9 @@ export class SubtitleComponent {
       if (targetClass.contains('subtitle-edit')) {
         this.editSubtitle(event.target.parentNode.parentNode.getAttribute('data-index'));
       }
+      if (targetClass.contains('subtitle-delete')) {
+        this.deleteSubtitle(event.target.parentNode.parentNode.getAttribute('data-index'));
+      }
     });
   }
 
@@ -52,6 +57,16 @@ export class SubtitleComponent {
     return JSON.parse(localStorage.getItem(`vidSubs-${this.videoId}`)) || [];
   }
 
+  setStoredSubtitles(subtitles) {
+    subtitles.sort((a,b) => {
+      if (a.startTime >= b.startTime) {
+        return 1;
+      }
+      else return -1;
+    });
+    localStorage.setItem(`vidSubs-${this.videoId}`, JSON.stringify(subtitles));
+  }
+
   saveToLocalStorage() {
     let subtitles = this.getStoredSubtitles();
     subtitles.push({
@@ -59,7 +74,7 @@ export class SubtitleComponent {
       endTime: `${this.subtitleEnd.value}`,
       text: this.subtitleText.value
     });
-    localStorage.setItem(`vidSubs-${this.videoId}`, JSON.stringify(subtitles));
+    this.setStoredSubtitles(subtitles);
   }
 
   refreshSubtitleListing() {
@@ -87,16 +102,20 @@ export class SubtitleComponent {
   }
 
   generateVTT() {
-    let subtitles = this.getStoredSubtitles();
     let vttFile = 'WEBVTT\n\n';
-    subtitles.forEach(subtitle => {
-      vttFile += `${subtitle.startTime}.000 --> ${subtitle.endTime}.000\n${subtitle.text}\n\n`;
-    });
+    const subtitles = this.getStoredSubtitles();
+    this.subtitlesDownloadLink.href = '';
+    this.subtitlesDownloadLink.removeAttribute('download');
 
-    const data = new Blob([vttFile], {type: 'text/plain'});
-    const url = window.URL.createObjectURL(data);
-    this.subtitlesDownloadLink.href = url;
-    this.subtitlesDownloadLink.download = `${this.videoId}.vtt`
+    if (subtitles.length > 0) {
+      subtitles.forEach(subtitle => {
+        vttFile += `${subtitle.startTime}.000 --> ${subtitle.endTime}.000\n${subtitle.text}\n\n`;
+      });
+
+      const data = new Blob([vttFile], {type: 'text/plain'});
+      this.subtitlesDownloadLink.href = window.URL.createObjectURL(data);
+      this.subtitlesDownloadLink.download = `${this.videoId}.vtt`
+    }
   }
 
   editSubtitle(subtitleIndex) {
@@ -104,5 +123,16 @@ export class SubtitleComponent {
     this.subtitleText.value = selectedSubtitle.text;
     this.subtitleStart.value = selectedSubtitle.startTime;
     this.subtitleEnd.value = selectedSubtitle.endTime;
+    const subtitles = this.getStoredSubtitles();
+    subtitles.splice(subtitleIndex, 1);
+    this.setStoredSubtitles(subtitles);
+    document.dispatchEvent(new Event('editSubtitle'));
+  }
+
+  deleteSubtitle(subtitleIndex) {
+    const subtitles = this.getStoredSubtitles();
+    subtitles.splice(subtitleIndex, 1);
+    this.setStoredSubtitles(subtitles);
+    this.refreshSubtitleListing();
   }
 }
