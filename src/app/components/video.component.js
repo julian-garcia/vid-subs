@@ -12,6 +12,7 @@ export class VideoComponent {
     this.videoControls = document.querySelector('.video-controls');
     this.videoVolume = document.querySelector('.video__volume-container');
     this.videoVolumeLevel = document.querySelector('.video__volume-level');
+    this.subtitleOverlay = document.querySelector('.subtitle-overlay');
     this.subtitleOverlayText = document.querySelector('.subtitle-overlay__text');
     this.player;
     this.currentTime;
@@ -51,10 +52,10 @@ export class VideoComponent {
           this.subtitleStart.value = '';
           this.subtitleEnd.value = '';
           this.videoNavStart.style.left = '0%';
-          this.videoNavEnd.style.left = '0.5%';
+          this.videoNavEnd.style.left = '0%';
         }
         this.subtitleStart.value = '00:00:00';
-        this.subtitleEnd.value = '00:00:10';
+        this.subtitleEnd.value = '00:00:01';
         this.injectVideoFrame(urlEntered);
         localStorage.setItem('videoID', this.videoID);
       }
@@ -93,8 +94,8 @@ export class VideoComponent {
           this.videoNavStart.style.left = `${this.navPosition}%`;
       
           if (this.currentTime >= (this.endTime || 0)) {
-            this.videoNavEnd.style.left = `${this.navPosition + .5}%`;
-            this.setEndTime(this.navPosition + .5);
+            this.videoNavEnd.style.left = `${this.navPosition + this.minimumPercentageGap}%`;
+            this.setEndTime(this.navPosition + this.minimumPercentageGap);
           }
 
           this.player.seekTo((this.navPosition / 100) * this.duration);
@@ -107,7 +108,7 @@ export class VideoComponent {
       if (this.mouseDown && (this.markerClasses.contains('video__marker-end') || this.markerClasses.contains('video__marker-start'))) {
         this.navPosition = (this.getMarkerPosition(event) / this.videoNav.offsetWidth) * 100;
 
-        if (this.navPosition <= 99.5) {
+        if (this.navPosition <= 99.9) {
           if (this.markerClasses.contains('video__marker-end')) {
             this.videoNavEnd.style.left = `${this.navPosition}%`;
             this.setEndTime(this.navPosition);
@@ -149,8 +150,8 @@ export class VideoComponent {
 
   onSubtitleEdit() {
     document.addEventListener('editSubtitle', () => {
-      const startSeconds = this.convertHMStoSeconds(this.subtitleStart.value);
-      const endSeconds = this.convertHMStoSeconds(this.subtitleEnd.value);
+      const startSeconds = this.utilities.convertHMStoSeconds(this.subtitleStart.value);
+      const endSeconds = this.utilities.convertHMStoSeconds(this.subtitleEnd.value);
       this.videoNavStart.style.left = `${(startSeconds / this.duration) * 100}%`;
       this.videoNavEnd.style.left = `${(endSeconds / this.duration) * 100}%`;
       this.player.seekTo(startSeconds);
@@ -173,12 +174,12 @@ export class VideoComponent {
   }
 
   getMarkerPosition(event) {
-    return event.clientX - ((window.innerWidth - this.videoNav.offsetWidth) / 2);
+    return Math.max(event.clientX - ((window.innerWidth - this.videoNav.offsetWidth) / 2), 0);
   }
 
   onPlayerReady(event) {
     this.duration = event.target.getDuration();
-    this.minimumPercentageGap = (3 / this.duration) * 100;
+    this.minimumPercentageGap = (1 / this.duration) * 100;
     this.videoVolumeLevel.style.width = `${this.player.getVolume()}%`
   }
 
@@ -190,36 +191,19 @@ export class VideoComponent {
 
   setCurrentTime(event) {
     this.currentTime = event.target.getCurrentTime();
-    this.subtitleStart.value = this.convertSecondsToHMS(this.currentTime);
+    this.subtitleStart.value = this.utilities.convertSecondsToHMS(this.currentTime);
   }
 
   setEndTime(markerPosition) {
     this.endTime = this.duration * (markerPosition / 100);
-    this.subtitleEnd.value = this.convertSecondsToHMS(this.endTime);
+    if (this.endTime <= 0  && !this.currentTime) { this.endTime  = 1; }
+    if (this.endTime <= this.currentTime && this.currentTime) { this.endTime = this.currentTime + 1; }
+    this.subtitleEnd.value = this.utilities.convertSecondsToHMS(this.endTime);
   }
 
   setStartTime(markerPosition) {
     this.currentTime = this.duration * (markerPosition / 100);
-    this.subtitleStart.value = this.convertSecondsToHMS(this.currentTime);
-  }
-  
-  convertSecondsToHMS(numSeconds) {
-    let seconds, minutes, hours, secondsShow, minutesShow, hoursShow;
-
-    hours = Math.floor(numSeconds / 60 / 60);
-    minutes = Math.floor(numSeconds / 60) - (hours * 60);
-    seconds = Math.floor(numSeconds - (minutes * 60) - (hours * 60 * 60));
-
-    hoursShow = hours < 10 ? `0${hours}` : hours;
-    minutesShow = minutes < 10 ? `0${minutes}` : minutes;
-    secondsShow = seconds < 10 ? `0${seconds}` : seconds;
-
-    return `${hoursShow}:${minutesShow}:${secondsShow}`;
-  }
-
-  convertHMStoSeconds(hms) {
-    const hmsArray = hms.split(':');
-    return (hmsArray[0] * 60 * 60) + (hmsArray[1] * 60) + Number(hmsArray[2]);
+    this.subtitleStart.value = this.utilities.convertSecondsToHMS(this.currentTime);
   }
 
   playing(event) {
@@ -245,11 +229,19 @@ export class VideoComponent {
     const subtitles = this.utilities.getStoredSubtitles(this.videoID);
     this.subtitleOverlayText.textContent = '';
 
+    let showSubtitle = false;
     subtitles.forEach(subtitle => {
-      if (this.currentTime >= this.convertHMStoSeconds(subtitle.startTime) &&
-          this.currentTime <= this.convertHMStoSeconds(subtitle.endTime)) {
+      if (this.currentTime >= this.utilities.convertHMStoSeconds(subtitle.startTime) &&
+          this.currentTime <= this.utilities.convertHMStoSeconds(subtitle.endTime)) {
         this.subtitleOverlayText.textContent = subtitle.text;
-      } 
+        showSubtitle = true;
+      }
     });
+
+    if (showSubtitle) { 
+      this.subtitleOverlay.classList.add('show'); 
+    } else {
+      this.subtitleOverlay.classList.remove('show');
+    }
   }
 }

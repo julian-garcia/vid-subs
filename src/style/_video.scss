@@ -23,10 +23,11 @@
   &__marker-start {
     left: 0%;
     background: $start-colour;
+    transform: translateX(-100%);
   }
 
   &__marker-end {
-    left: 1%;
+    left: 0%;
     background: $stop-colour;
   }
 
@@ -75,10 +76,15 @@
     transform: translateX(-50%);
     background: rgba(black, .8);
     color: white;
+    display: none;
 
     &__text {
       padding: .5rem 1rem;
       margin: 0;
+    }
+
+    &.show {
+      display: block;
     }
   }
 }

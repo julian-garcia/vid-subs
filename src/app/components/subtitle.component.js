@@ -1,3 +1,5 @@
+import { Utilities } from '../utilities';
+
 export class SubtitleComponent {
   constructor() {
     this.urlEntryElement = document.getElementById('videoUrl');
@@ -9,6 +11,7 @@ export class SubtitleComponent {
     this.subtitlesDownload = document.querySelector('.subtitles-download');
     this.subtitlesDownloadLink = document.getElementById('download');
     this.videoId;
+    this.utilities = new Utilities();
   }
 
   onAddSubtitle() {
@@ -16,6 +19,18 @@ export class SubtitleComponent {
       if (this.subtitleText.value && 
           this.subtitleStart.value && 
           this.subtitleEnd.value) {
+        const subtitles = this.utilities.getStoredSubtitles(this.videoId);
+        let existingIndex = -1;
+        subtitles.forEach((subtitle, index) => {
+          if (subtitle.startTime === this.subtitleStart.value && 
+              subtitle.endTime === this.subtitleEnd.value) {
+            existingIndex = index;
+          }
+        });
+        if (existingIndex >= 0) {
+          subtitles.splice(existingIndex,1);
+          this.setStoredSubtitles(subtitles);
+        }
         this.setVideoID();
         this.saveToLocalStorage();
         this.refreshSubtitleListing();
@@ -53,10 +68,6 @@ export class SubtitleComponent {
     this.videoId = localStorage.getItem('videoID');
   }
 
-  getStoredSubtitles() {
-    return JSON.parse(localStorage.getItem(`vidSubs-${this.videoId}`)) || [];
-  }
-
   setStoredSubtitles(subtitles) {
     subtitles.sort((a,b) => {
       if (a.startTime >= b.startTime) {
@@ -68,7 +79,7 @@ export class SubtitleComponent {
   }
 
   saveToLocalStorage() {
-    let subtitles = this.getStoredSubtitles();
+    let subtitles = this.utilities.getStoredSubtitles(this.videoId);
     subtitles.push({
       startTime: `${this.subtitleStart.value}`,
       endTime: `${this.subtitleEnd.value}`,
@@ -78,7 +89,7 @@ export class SubtitleComponent {
   }
 
   refreshSubtitleListing() {
-    const subtitles = this.getStoredSubtitles();
+    const subtitles = this.utilities.getStoredSubtitles(this.videoId);
     this.subtitlesListing.innerHTML = '';
     subtitles.forEach((subtitle, index) => {
       const newRow = document.createElement('tr');
@@ -103,7 +114,7 @@ export class SubtitleComponent {
 
   generateVTT() {
     let vttFile = 'WEBVTT\n\n';
-    const subtitles = this.getStoredSubtitles();
+    const subtitles = this.utilities.getStoredSubtitles(this.videoId);
     this.subtitlesDownloadLink.href = '#';
     this.subtitlesDownloadLink.removeAttribute('download');
 
@@ -119,18 +130,16 @@ export class SubtitleComponent {
   }
 
   editSubtitle(subtitleIndex) {
-    const selectedSubtitle = this.getStoredSubtitles()[subtitleIndex];
+    const subtitles = this.utilities.getStoredSubtitles(this.videoId);
+    const selectedSubtitle = subtitles[subtitleIndex];
     this.subtitleText.value = selectedSubtitle.text;
     this.subtitleStart.value = selectedSubtitle.startTime;
     this.subtitleEnd.value = selectedSubtitle.endTime;
-    const subtitles = this.getStoredSubtitles();
-    subtitles.splice(subtitleIndex, 1);
-    this.setStoredSubtitles(subtitles);
     document.dispatchEvent(new Event('editSubtitle'));
   }
 
   deleteSubtitle(subtitleIndex) {
-    const subtitles = this.getStoredSubtitles();
+    const subtitles = this.utilities.getStoredSubtitles(this.videoId);
     subtitles.splice(subtitleIndex, 1);
     this.setStoredSubtitles(subtitles);
     this.refreshSubtitleListing();
