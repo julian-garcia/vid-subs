@@ -1,3 +1,5 @@
+import { Utilities } from '../utilities';
+
 export class VideoComponent {
   constructor() {
     this.urlEntryElement = document.getElementById('videoUrl');
@@ -10,6 +12,7 @@ export class VideoComponent {
     this.videoControls = document.querySelector('.video-controls');
     this.videoVolume = document.querySelector('.video__volume-container');
     this.videoVolumeLevel = document.querySelector('.video__volume-level');
+    this.subtitleOverlayText = document.querySelector('.subtitle-overlay__text');
     this.player;
     this.currentTime;
     this.endTime;
@@ -20,6 +23,7 @@ export class VideoComponent {
     this.videoID;
     this.volumeAdjust;
     this.mouseDown = false;
+    this.utilities = new Utilities();
   }
 
   injectVideoFrame(url) {
@@ -78,6 +82,7 @@ export class VideoComponent {
           mouseDownVideoNav = true;
         }
       });
+
       if (mouseDownVideoNav) {
         this.mouseDown = false;
         
@@ -91,7 +96,7 @@ export class VideoComponent {
             this.videoNavEnd.style.left = `${this.navPosition + .5}%`;
             this.setEndTime(this.navPosition + .5);
           }
-  
+
           this.player.seekTo((this.navPosition / 100) * this.duration);
         }
       }
@@ -149,6 +154,7 @@ export class VideoComponent {
       this.videoNavStart.style.left = `${(startSeconds / this.duration) * 100}%`;
       this.videoNavEnd.style.left = `${(endSeconds / this.duration) * 100}%`;
       this.player.seekTo(startSeconds);
+      this.player.pauseVideo();
     });
   }
 
@@ -172,7 +178,8 @@ export class VideoComponent {
 
   onPlayerReady(event) {
     this.duration = event.target.getDuration();
-    this.minimumPercentageGap = (10 / this.duration) * 100;
+    this.minimumPercentageGap = (3 / this.duration) * 100;
+    this.videoVolumeLevel.style.width = `${this.player.getVolume()}%`
   }
 
   onPlayerStateChange(event) {
@@ -228,8 +235,21 @@ export class VideoComponent {
         this.setEndTime(this.navPosition + this.minimumPercentageGap);
         this.videoNavEnd.style.left = `${this.navPosition + this.minimumPercentageGap}%`;
       }
+      this.showSubtitle();
     } else {
       event.target.pauseVideo();
     }
+  }
+
+  showSubtitle() {
+    const subtitles = this.utilities.getStoredSubtitles(this.videoID);
+    this.subtitleOverlayText.textContent = '';
+
+    subtitles.forEach(subtitle => {
+      if (this.currentTime >= this.convertHMStoSeconds(subtitle.startTime) &&
+          this.currentTime <= this.convertHMStoSeconds(subtitle.endTime)) {
+        this.subtitleOverlayText.textContent = subtitle.text;
+      } 
+    });
   }
 }

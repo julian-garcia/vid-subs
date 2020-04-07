@@ -104,7 +104,7 @@ export class SubtitleComponent {
   generateVTT() {
     let vttFile = 'WEBVTT\n\n';
     const subtitles = this.getStoredSubtitles();
-    this.subtitlesDownloadLink.href = '';
+    this.subtitlesDownloadLink.href = '#';
     this.subtitlesDownloadLink.removeAttribute('download');
 
     if (subtitles.length > 0) {

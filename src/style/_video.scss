@@ -1,4 +1,6 @@
 .video {
+  position: relative;
+
   &__nav {
     position: relative;
     width:97%; 
@@ -64,5 +66,19 @@
     width: 0%;
     height: 1rem;
     background: black;
+  }
+
+  .subtitle-overlay {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(black, .8);
+    color: white;
+
+    &__text {
+      padding: .5rem 1rem;
+      margin: 0;
+    }
   }
 }
