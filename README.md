@@ -1,19 +1,18 @@
 # VidSubs
-Facilitate addition of subtitles to YouTube videos
+Facilitate creation of subtitles in the form of video text track files based on YouTube videos. The resulting file can then be uploaded to Youtube for permanent subtitles. This can also be used to translate subtitles you've previously generated in to another language.
 ***
 
+## Usage
+
 ## Components
-- Video viewport
-- Subtitle Entry
-- Time navigator
-- Video Library
-  
-## Services
-- Storage - generate/append/read vtt + video url
-- Backend - add/update/remove vtt + video url
-- Download vtt file
-  
-## Utilities
-- Navigate back/forth
-- Set start and end markers
-- Navigate video to selected subtitle
+- Video 
+  - Time navigator
+  - Controls: play/pause/volume
+- Subtitle 
+  - Subtitle entry field
+  - Import/export vtt file
+  - Listing of subtitles
+
+## Framework / Languages 
+- Webpack 4
+- HTML/SCSS/JavaScript

@@ -117,6 +117,7 @@ export class SubtitleComponent {
       const end = document.createElement('td');
       const options = document.createElement('td');
       text.innerText = subtitle.text;
+      text.classList.add('wide');
       start.innerText = subtitle.startTime;
       end.innerText = subtitle.endTime;
       options.innerHTML = `<i class="fas fa-edit subtitle-edit"></i>

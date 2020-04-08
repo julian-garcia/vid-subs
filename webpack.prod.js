@@ -7,7 +7,8 @@ module.exports = merge(common, {
   mode: 'production',
   output: {
     filename: '[name].[contentHash].js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/vid-subs/'
   },
   plugins: [
     new CleanWebpackPlugin(),

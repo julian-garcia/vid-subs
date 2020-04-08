@@ -75,4 +75,26 @@
       opacity: 0;
     }
   }
+
+  thead {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .wide {
+    width: 50%;
+  }
+
+  &__listing {
+    display: block;
+    max-height: 500px;
+    overflow-y: scroll;
+
+    tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+  }
 }
