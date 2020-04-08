@@ -17,11 +17,23 @@
   &__start, &__end {
     background: lightgray;
     border-color: gray;
+    margin-bottom: 1.8rem;
   }
 
   &__add {
     font-size: 2rem;
     cursor: pointer;
+    margin-bottom: 1.8rem;
+  }
+
+  &__original {
+    margin: .2rem 0 .2rem;
+    display: inline-block;
+    color: gray;
+
+    &-label {
+      color: gray;
+    }
   }
 }
 
@@ -41,12 +53,26 @@
     padding: 1rem .5rem;
   }
 
-  &-download {
+  &-download, &-upload {
     position: absolute;
-    right: -5rem;
-    bottom: 0;
+    bottom: 1.8rem;
     font-size: 2rem;
+    height: 2.2rem;
     color: black;
     line-height: 2rem;
+    text-decoration: none;
+  }
+  
+  &-download {
+    right: -2rem;
+  }
+
+  &-upload {
+    right: -5rem;
+
+    input {
+      width: 0;
+      opacity: 0;
+    }
   }
 }

@@ -10,8 +10,11 @@ export class SubtitleComponent {
     this.subtitlesListing = document.querySelector('.subtitles__listing');
     this.subtitlesDownload = document.querySelector('.subtitles-download');
     this.subtitlesDownloadLink = document.getElementById('download');
-    this.videoId;
+    this.subtitlesUpload = document.querySelector('.subtitles-upload input');
+    this.subtitleOriginal = document.querySelector('.subtitle__original');
     this.utilities = new Utilities();
+    this.videoId;
+    this.videoDuration;
   }
 
   onAddSubtitle() {
@@ -35,6 +38,7 @@ export class SubtitleComponent {
         this.saveToLocalStorage();
         this.refreshSubtitleListing();
         this.subtitleText.value = '';
+        this.subtitleOriginal.textContent = '';
       }
     });
   }
@@ -52,6 +56,15 @@ export class SubtitleComponent {
     });
   }
 
+  onUploadSubtitles() {
+    this.subtitlesUpload.addEventListener('change', (e) => {
+      const importedFile = e.target.files;
+      if (importedFile) {
+        this.importVTT(importedFile[0]);
+      }
+    });
+  }
+
   onClickSubtitles() {
     this.subtitlesListing.addEventListener('click', (event) => {
       const targetClass = event.target.classList;
@@ -61,6 +74,12 @@ export class SubtitleComponent {
       if (targetClass.contains('subtitle-delete')) {
         this.deleteSubtitle(event.target.parentNode.parentNode.getAttribute('data-index'));
       }
+    });
+  }
+
+  onDurationAvailable() {
+    document.addEventListener('duration', (e) => {
+      this.videoDuration = e.detail.duration;
     });
   }
 
@@ -129,12 +148,39 @@ export class SubtitleComponent {
     }
   }
 
+  importVTT(vttFile) {
+    if (this.videoId) {
+      const reader = new FileReader();
+      let vttArray = [];
+      let subtitlesArray = [];
+      reader.readAsText(vttFile);
+      reader.onload = () => {
+        vttArray = reader.result.split('\n').filter(line => line !== '').slice(1);
+
+        for(let i = 0; i < vttArray.length; i += 2) {
+          let timesArray = vttArray[i].split(' --> ');
+          let startTime = timesArray[0].substr(0,8);
+          let endTime = timesArray[1].substr(0,8);
+          if (this.utilities.convertHMStoSeconds(startTime) <= this.videoDuration &&
+              this.utilities.convertHMStoSeconds(endTime) <= this.videoDuration) {
+            subtitlesArray.push({startTime: startTime, 
+                                 endTime: endTime, 
+                                 text: vttArray[i+1]});
+          }
+        }
+        this.setStoredSubtitles(subtitlesArray);
+        this.refreshSubtitleListing();
+      };
+    }
+  }
+
   editSubtitle(subtitleIndex) {
     const subtitles = this.utilities.getStoredSubtitles(this.videoId);
     const selectedSubtitle = subtitles[subtitleIndex];
     this.subtitleText.value = selectedSubtitle.text;
     this.subtitleStart.value = selectedSubtitle.startTime;
     this.subtitleEnd.value = selectedSubtitle.endTime;
+    this.subtitleOriginal.textContent = selectedSubtitle.text;
     document.dispatchEvent(new Event('editSubtitle'));
   }
 

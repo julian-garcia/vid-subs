@@ -6,5 +6,7 @@ export const run = (videoComponent, subtitleComponent) => {
   subtitleComponent.onUrlEntry();
   subtitleComponent.onAddSubtitle();
   subtitleComponent.onDownloadSubtitles();
+  subtitleComponent.onUploadSubtitles();
   subtitleComponent.onClickSubtitles();
+  subtitleComponent.onDurationAvailable();
 };

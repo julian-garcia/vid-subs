@@ -38,9 +38,15 @@
     <a href="#" id="download" class="subtitles-download">
       <i class="fas fa-file-download"></i>
     </a>
+    <label class="subtitles-upload">
+      <i class="fas fa-file-upload subtitles-upload-icon"></i>
+      <input type="file" name="fileToUpload" id="fileToUpload" accept="text/vtt">
+    </label>
     <div>
       <label for="subtitleText" class="subtitle__label">Subtitle</label><br>
       <input type="text" name="subtitleText" id="subtitleText" class="subtitle__text">
+      <span class="subtitle__original-label"><strong>Original text: </strong></span>
+      <p class="subtitle__original"></p>
     </div>
     <div>
       <label for="subtitleStart" class="subtitle__label start">Start time</label><br>
@@ -52,29 +58,16 @@
     </div>
     <i class="fas fa-plus subtitle__add"></i>
   </div>
-  <div class="subtitles-tables">
-    <table class="subtitles-translate">
-      <thead>
-        <tr>
-            <th>Subtitle text</th>
-            <th>Start time</th>
-            <th>End time</th>
-            <th>Options</th>
-        </tr>
-      </thead>
-      <tbody class="subtitles-translate__listing"></tbody>
-    </table>
-    <table class="subtitles">
-      <thead>
-        <tr>
-            <th>Subtitle text</th>
-            <th>Start time</th>
-            <th>End time</th>
-            <th>Options</th>
-        </tr>
-      </thead>
-      <tbody class="subtitles__listing"></tbody>
-    </table>
-  </div>
+  <table class="subtitles">
+    <thead>
+      <tr>
+          <th>Subtitle text</th>
+          <th>Start time</th>
+          <th>End time</th>
+          <th>Options</th>
+      </tr>
+    </thead>
+    <tbody class="subtitles__listing"></tbody>
+  </table>
 </body>
 </html>

@@ -180,7 +180,8 @@ export class VideoComponent {
   onPlayerReady(event) {
     this.duration = event.target.getDuration();
     this.minimumPercentageGap = (1 / this.duration) * 100;
-    this.videoVolumeLevel.style.width = `${this.player.getVolume()}%`
+    this.videoVolumeLevel.style.width = `${this.player.getVolume()}%`;
+    document.dispatchEvent(new CustomEvent('duration', {detail: {duration: this.duration}}));
   }
 
   onPlayerStateChange(event) {
@@ -197,7 +198,7 @@ export class VideoComponent {
   setEndTime(markerPosition) {
     this.endTime = this.duration * (markerPosition / 100);
     if (this.endTime <= 0  && !this.currentTime) { this.endTime  = 1; }
-    if (this.endTime <= this.currentTime && this.currentTime) { this.endTime = this.currentTime + 1; }
+    if ((this.endTime <= this.currentTime) && this.currentTime) { this.endTime = this.currentTime + 1; }
     this.subtitleEnd.value = this.utilities.convertSecondsToHMS(this.endTime);
   }
 
@@ -215,7 +216,7 @@ export class VideoComponent {
       let startSeconds = Number(this.subtitleStart.value.replace(/:/g,''));
       let endSeconds = Number(this.subtitleEnd.value.replace(/:/g,''));
   
-      if (startSeconds + 9 >= endSeconds) {
+      if (startSeconds + 1 >= endSeconds) {
         this.setEndTime(this.navPosition + this.minimumPercentageGap);
         this.videoNavEnd.style.left = `${this.navPosition + this.minimumPercentageGap}%`;
       }
